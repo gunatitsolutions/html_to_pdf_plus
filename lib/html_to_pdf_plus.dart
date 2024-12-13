@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:html_to_pdf_plus/file_utils.dart';
 
@@ -33,6 +34,7 @@ class HtmlToPdf {
       configuration.printSize,
       configuration.printOrientation,
       configuration.linksClickable,
+      configuration.margin,
     );
 
     temporaryCreatedHtmlFile.delete();
@@ -56,6 +58,7 @@ class HtmlToPdf {
       configuration.printSize,
       configuration.printOrientation,
       configuration.linksClickable,
+      configuration.margin,
     );
 
     return FileUtils.copyAndDeleteOriginalFile(
@@ -77,11 +80,13 @@ class HtmlToPdf {
       configuration.printSize,
       configuration.printOrientation,
       configuration.linksClickable,
+      configuration.margin,
     );
     final generatedPdfFile = FileUtils.copyAndDeleteOriginalFile(
-        generatedPdfFilePath,
-        configuration.targetDirectory,
-        configuration.targetName);
+      generatedPdfFilePath,
+      configuration.targetDirectory,
+      configuration.targetName,
+    );
 
     return generatedPdfFile;
   }
@@ -92,12 +97,18 @@ class HtmlToPdf {
     PrintSize printSize,
     PrintOrientation printOrientation,
     bool linksClickable,
+    EdgeInsets? margin,
   ) async {
     int width = printSize
         .getDimensionsInPixels[printOrientation.getWidthDimensionIndex];
     int height = printSize
         .getDimensionsInPixels[printOrientation.getHeightDimensionIndex];
-
+    final Map<String, double> marginMap = {
+      'left': margin?.left ?? 0.0,
+      'top': margin?.top ?? 0.0,
+      'right': margin?.right ?? 0.0,
+      'bottom': margin?.bottom ?? 0.0,
+    };
     return await _channel.invokeMethod(
       'convertHtmlToPdf',
       <String, dynamic>{
@@ -107,6 +118,7 @@ class HtmlToPdf {
         'printSize': printSize.printSizeKey,
         'orientation': printOrientation.orientationKey,
         'linksClickable': linksClickable,
+        'margin': marginMap,
       },
     ) as String;
   }

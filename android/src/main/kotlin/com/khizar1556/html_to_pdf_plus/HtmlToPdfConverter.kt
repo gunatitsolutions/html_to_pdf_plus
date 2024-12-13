@@ -19,7 +19,7 @@ class HtmlToPdfConverter {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    fun convert(filePath: String, applicationContext: Context, printSize: String, orientation: String, callback: Callback) {
+    fun convert(filePath: String, applicationContext: Context, printSize: String, orientation: String, callback: Callback, margin: Map<String, Double>) {
         val webView = WebView(applicationContext)
         val htmlContent = File(filePath).readText(Charsets.UTF_8)
         webView.settings.javaScriptEnabled = true
@@ -29,12 +29,12 @@ class HtmlToPdfConverter {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                createPdfFromWebView(webView, applicationContext, printSize, orientation, callback)
+                createPdfFromWebView(webView, applicationContext, printSize, orientation, callback, margin)
             }
         }
     }
 
-    fun createPdfFromWebView(webView: WebView, applicationContext: Context, printSize: String, orientation: String, callback: Callback) {
+    fun createPdfFromWebView(webView: WebView, applicationContext: Context, printSize: String, orientation: String, callback: Callback, margin: Map<String, Double>) {
         val path = applicationContext.filesDir
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             var mediaSize = PrintAttributes.MediaSize.ISO_A4
@@ -59,9 +59,13 @@ class HtmlToPdfConverter {
             }
 
             val attributes = PrintAttributes.Builder()
-                .setMediaSize(mediaSize)
-                .setResolution(PrintAttributes.Resolution("pdf", "pdf", 300, 300))
-                .setMinMargins(PrintAttributes.Margins.NO_MARGINS).build()
+                    .setMediaSize(mediaSize)
+                    .setResolution(PrintAttributes.Resolution("pdf", "pdf", 300, 300))
+                    .setMinMargins(PrintAttributes.Margins(marginMap?.get("left")?.toInt()
+                            ?: 0, marginMap?.get("top")?.toInt()
+                            ?: 0, marginMap?.get("right")?.toInt()
+                            ?: 0, marginMap?.get("bottom")?.toInt() ?: 0))
+                    .build()
 
             val printer = PdfPrinter(attributes)
 
@@ -80,6 +84,7 @@ class HtmlToPdfConverter {
             }
         }
     }
+
     companion object {
         const val temporaryDocumentName = "TemporaryDocumentName"
         const val temporaryFileName = "TemporaryDocumentFile.pdf"
