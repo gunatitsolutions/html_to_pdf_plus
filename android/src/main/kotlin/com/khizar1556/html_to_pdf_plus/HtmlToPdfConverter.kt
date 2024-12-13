@@ -19,7 +19,7 @@ class HtmlToPdfConverter {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    fun convert(filePath: String, applicationContext: Context, printSize: String, orientation: String, margin: Map<String, Double>?, callback: Callback) {
+    fun convert(filePath: String, applicationContext: Context, printSize: String, orientation: String, margin: Map<String, Double>, callback: Callback) {
         val webView = WebView(applicationContext)
         val htmlContent = File(filePath).readText(Charsets.UTF_8)
         webView.settings.javaScriptEnabled = true
@@ -29,12 +29,12 @@ class HtmlToPdfConverter {
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView, url: String) {
                 super.onPageFinished(view, url)
-                createPdfFromWebView(webView, applicationContext, printSize, orientation, margin, callback,)
+                createPdfFromWebView(webView, applicationContext, printSize, orientation, margin, callback)
             }
         }
     }
 
-    fun createPdfFromWebView(webView: WebView, applicationContext: Context, printSize: String, orientation: String, margin: Map<String, Double>?, callback: Callback) {
+    fun createPdfFromWebView(webView: WebView, applicationContext: Context, printSize: String, orientation: String, margin: Map<String, Double>, callback: Callback) {
         val path = applicationContext.filesDir
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             var mediaSize = PrintAttributes.MediaSize.ISO_A4
@@ -61,7 +61,7 @@ class HtmlToPdfConverter {
             val attributes = PrintAttributes.Builder()
                     .setMediaSize(mediaSize)
                     .setResolution(PrintAttributes.Resolution("pdf", "pdf", 300, 300))
-                    .setMinMargins(PrintAttributes.Margins(margin?.get("left")?.toInt() ?: 0, margin?.get("top")?.toInt() ?: 0, margin?.get("right")?.toInt() ?: 0, margin?.get("bottom")?.toInt() ?: 0)).build()
+                    .setMinMargins(PrintAttributes.Margins(margin.get("left").toInt(), margin.get("top").toInt(), margin.get("right").toInt(), margin.get("bottom").toInt())).build()
 
             val printer = PdfPrinter(attributes)
 
