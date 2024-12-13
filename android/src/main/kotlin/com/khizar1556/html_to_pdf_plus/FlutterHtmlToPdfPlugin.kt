@@ -37,7 +37,7 @@ class FlutterHtmlToPdfPlugin : FlutterPlugin, MethodCallHandler {
         val htmlFilePath = call.argument<String>("htmlFilePath")
         val printSize = call.argument<String>("printSize")
         val orientation = call.argument<String>("orientation")
-        val margin = call.argument<Map<String, Double>>("margin")
+        val margin: Map<String, Double>? = call.argument<Map<String, Double>>("margin")
 
         HtmlToPdfConverter().convert(htmlFilePath!!, applicationContext, printSize!!, orientation!!, margin, object : HtmlToPdfConverter.Callback {
             override fun onSuccess(filePath: String) {
