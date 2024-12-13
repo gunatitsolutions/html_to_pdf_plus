@@ -1,10 +1,11 @@
 import 'pdf_configuration_enums.dart';
-
+import 'package:flutter/material.dart';
 class PdfConfiguration {
   final String targetDirectory;
   final String targetName;
   final PrintSize printSize;
   final PrintOrientation printOrientation;
+  final EdgeInsets margin;
   /// Make links clickable on iOS. But, any image will need to be set as data base64  <img src="data:image/jpeg;base64,[DATA]" />
   final bool linksClickable;
   /// `targetDirectory` is the desired path for the Pdf file.
@@ -20,6 +21,7 @@ class PdfConfiguration {
     this.printSize = PrintSize.A4,
     this.printOrientation = PrintOrientation.Portrait,
     this.linksClickable = false,
+    this.margin = EdgeInsets.zero,
   });
 
   /// Returns the final path for temporary Html File
